@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COM-EQUIP | ระบบยืม-คืนอุปกรณ์คอมพิวเตอร์</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Navbar -->
+        <header class="navbar">
+            <div class="logo" onclick="switchPage('home')" style="cursor: pointer;">
+                <i class="fa-solid fa-desktop logo-icon"></i>
+                <div class="logo-text">
+                    <h1>COM-EQUIP</h1>
+                    <p>ระบบยืม-คืนอุปกรณ์คอมพิวเตอร์</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-item active" data-target="home"><i class="fa-solid fa-house"></i> หน้าแรก</a>
+                <a href="#" class="nav-item" data-target="equipment">อุปกรณ์</a>
+                <a href="#" class="nav-item" data-target="borrow">ยืมอุปกรณ์</a>
+                <a href="#" class="nav-item" data-target="return">คืนอุปกรณ์</a>
+                <a href="#" class="nav-item" data-target="status">ตรวจสอบสถานะ</a>
+            </nav>
+            <div class="user-profile-wrapper">
+                <button id="btn-login-trigger" class="btn-login-nav" onclick="openLoginModal()" style="display: none;">
+                    <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ
+                </button>
+                <div id="user-profile-trigger" class="user-profile" onclick="toggleUserDropdown(event)">
+                    <i class="fa-regular fa-circle-user"></i> <span id="current-user-name">ผู้ดูแลระบบ</span> <i class="fa-solid fa-caret-down"></i>
+                </div>
+                <div id="user-dropdown-menu" class="user-dropdown" style="display: none;">
+                    <div class="dropdown-header">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <div>
+                            <strong id="dropdown-user-name">ผู้ดูแลระบบ (Admin)</strong>
+                            <small id="dropdown-user-email">admin@comequip.ac.th</small>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" onclick="openAdminModal('profile'); return false;"><i class="fa-solid fa-user-gear"></i> ข้อมูลส่วนตัว</a>
+                    <a href="#" class="dropdown-item" onclick="openAdminModal('settings'); return false;"><i class="fa-solid fa-sliders"></i> ตั้งค่าระบบ</a>
+                    <a href="#" class="dropdown-item" onclick="openAdminModal('reports'); return false;"><i class="fa-solid fa-file-invoice-dollar"></i> รายงานการยืม-คืน</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item text-danger" onclick="logoutAdmin(); return false;"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-content">
+
+            <!-- 1. Home Section -->
+            <section id="home" class="page-section active">
+                <div class="hero-banner">
+                    <div class="hero-content">
+                        <h2>ระบบยืม-คืน<br>อุปกรณ์คอมพิวเตอร์</h2>
+                        <div class="hero-divider"></div>
+                        <p>ระบบบริหารจัดการการยืม-คืนอุปกรณ์คอมพิวเตอร์<br>เพื่อความสะดวก รวดเร็ว และตรวจสอบได้ง่าย</p>
+                        <button class="btn-primary" onclick="switchPage('borrow')"><i
+                                class="fa-solid fa-arrow-up-right-from-square"></i> ยืมอุปกรณ์เลย</button>
+                    </div>
+                    <div class="hero-image-container">
+                        <img src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=500&q=80"
+                            alt="PC Setup" class="hero-main-img">
+                        <div class="floating-badge">
+                            <i class="fa-solid fa-desktop"></i>
+                            <p>ใช้งานง่าย<br><span>สะดวก รวดเร็ว</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon gray"><i class="fa-solid fa-barcode"></i></div>
+                        <div class="stat-info">
+                            <p>อุปกรณ์ทั้งหมด</p>
+                            <h3>36 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-info">
+                            <p>พร้อมใช้งาน</p>
+                            <h3>22 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div>
+                        <div class="stat-info">
+                            <p>กำลังถูกยืม</p>
+                            <h3>14 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red"><i class="fa-solid fa-calendar-day"></i></div>
+                        <div class="stat-info">
+                            <p>คืนวันนี้</p>
+                            <h3>5 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title-row">
+                    <h3><i class="fa-solid fa-square-poll-vertical"></i> อุปกรณ์ยอดนิยม</h3>
+                    <button class="btn-danger-pill" onclick="switchPage('equipment')"><i class="fa-solid fa-grid-2"></i> ดูทั้งหมด</button>
+                </div>
+
+                <div class="equipment-grid">
+                    <div class="equipment-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=300&q=80"
+                                alt="เมาส์ hp">
+                        </div>
+                        <h4>เมาส์ hp</h4>
+                        <span class="badge badge-green">พร้อมใช้งาน</span>
+                        <div class="card-footer">
+                            <button class="btn-red-small" onclick="openEquipmentModal('MOU-001')">ดูรายละเอียด</button>
+                            <span class="stock">คงเหลือ 12/15 ชิ้น</span>
+                        </div>
+                        
+                    </div>
+                    <div class="equipment-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=300&q=80"
+                                alt="คีย์บอร์ด">
+                        </div>
+                        <h4>คีย์บอร์ด</h4>
+                        <span class="badge badge-green">พร้อมใช้งาน</span>
+                        <div class="card-footer">
+                            <button class="btn-red-small" onclick="openEquipmentModal('KEY-001')">ดูรายละเอียด</button>
+                            <span class="stock">คงเหลือ 8/10 ชิ้น</span>
+                        </div>
+                    </div>
+                    <div class="equipment-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://shop-image.readyplanet.com/o5i15Qd4d2aqqJtPRG5rNWBcmK8=/38a84492f7054becbb93c5a3dbdce215" alt="โปรเจกเตอร์ epson">
+                        </div>
+                        <h4>โปรเจกเตอร์ epson</h4>
+                        <span class="badge badge-yellow">กำลังถูกยืม</span>
+                        <div class="card-footer">
+                            <button class="btn-red-small" onclick="openEquipmentModal('PRO-001')">ดูรายละเอียด</button>
+                            <span class="stock">คงเหลือ 2/4 ชิ้น</span>
+                        </div>
+                    </div>
+                    <div class="equipment-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://image.makewebcdn.com/makeweb/m_1920x0/LqL4C2aWe/product_02/techgear_cat6_ethernet_lan_cable_cord_20_meter_original_imaf9ggz9zqp74y4.png" alt="สายแลน LAN">
+                        </div>
+                        <h4>สายแลน LAN</h4>
+                        <span class="badge badge-green">พร้อมใช้งาน</span>
+                        <div class="card-footer">
+                            <button class="btn-red-small" onclick="openEquipmentModal('LAV-001')">ดูรายละเอียด</button>
+                            <span class="stock">คงเหลือ 20/25 เส้น</span>
+                        </div>
+                        
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Equipment Section -->
+            <section id="equipment" class="page-section">
+                <div class="hero-banner">
+                    <div class="hero-content">
+                        <h2>ระบบยืม-คืน<br>อุปกรณ์คอมพิวเตอร์</h2>
+                        <div class="hero-divider"></div>
+                        <p>ระบบบริหารจัดการการยืม-คืนอุปกรณ์คอมพิวเตอร์<br>เพื่อความสะดวก รวดเร็ว และตรวจสอบได้ง่าย</p>
+                        <button class="btn-primary" onclick="switchPage('borrow')"><i
+                                class="fa-solid fa-arrow-up-right-from-square"></i> ยืมอุปกรณ์เลย</button>
+                    </div>
+                    <div class="hero-image-container">
+                        <img src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=500&q=80"
+                            alt="PC Setup" class="hero-main-img">
+                        <div class="floating-badge">
+                            <i class="fa-solid fa-desktop"></i>
+                            <p>ใช้งานง่าย<br><span>สะดวก รวดเร็ว</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon gray"><i class="fa-solid fa-barcode"></i></div>
+                        <div class="stat-info">
+                            <p>อุปกรณ์ทั้งหมด</p>
+                            <h3>36 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-info">
+                            <p>พร้อมใช้งาน</p>
+                            <h3>22 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div>
+                        <div class="stat-info">
+                            <p>กำลังถูกยืม</p>
+                            <h3>14 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red"><i class="fa-solid fa-calendar-day"></i></div>
+                        <div class="stat-info">
+                            <p>คืนวันนี้</p>
+                            <h3>5 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title-row">
+                    <h3><i class="fa-solid fa-square-poll-vertical"></i> อุปกรณ์ยอดนิยม</h3>
+                    <button class="btn-danger-pill" onclick="switchPage('status')"><i class="fa-solid fa-grid-2"></i> ดูทั้งหมด</button>
+                </div>
+
+                <div class="equipment-grid">
+                    <div class="equipment-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=300&q=80"
+                                alt="เมาส์ hp">
+                        </div>
+                        <h4>เมาส์ hp</h4>
+                        <span class="badge badge-green">พร้อมใช้งาน</span>
+                        <div class="card-footer">
+                            <button class="btn-red-small" onclick="openEquipmentModal('MOU-001')">ดูรายละเอียด</button>
+                            <span class="stock">คงเหลือ 12/15 ชิ้น</span>
+                        </div>
+                    </div>
+                    <div class="equipment-card keyboard-highlight">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=300&q=80"
+                                alt="คีย์บอร์ด">
+                        </div>
+                        <h4>คีย์บอร์ด</h4>
+                        <span class="badge badge-green">พร้อมใช้งาน</span>
+                        <div class="card-footer">
+                            <button class="btn-red-small" onclick="openEquipmentModal('KEY-001')">ดูรายละเอียด</button>
+                            <span class="stock">คงเหลือ 8/10 ชิ้น</span>
+                        </div>
+                    </div>
+                    <div class="equipment-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://shop-image.readyplanet.com/o5i15Qd4d2aqqJtPRG5rNWBcmK8=/38a84492f7054becbb93c5a3dbdce215"
+                                alt="โปรเจกเตอร์ epson">
+                        </div>
+                        <h4>โปรเจกเตอร์ epson</h4>
+                        <span class="badge badge-yellow">กำลังถูกยืม</span>
+                        <div class="card-footer">
+                            <button class="btn-red-small" onclick="openEquipmentModal('PRO-001')">ดูรายละเอียด</button>
+                            <span class="stock">คงเหลือ 2/4 ชิ้น</span>
+                        </div>
+                    </div>
+                    <div class="equipment-card">
+                        <div class="card-img-wrapper">
+                            <img src="https://image.makewebcdn.com/makeweb/m_1920x0/LqL4C2aWe/product_02/techgear_cat6_ethernet_lan_cable_cord_20_meter_original_imaf9ggz9zqp74y4.png" alt="สายแลน LAN">
+                        </div>
+                        <h4>สายแลน LAN</h4>
+                        <span class="badge badge-green">พร้อมใช้งาน</span>
+                        <div class="card-footer">
+                            <button class="btn-red-small" onclick="openEquipmentModal('LAV-001')">ดูรายละเอียด</button>
+                            <span class="stock">คงเหลือ 20/25 เส้น</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Borrow Section -->
+            <section id="borrow" class="page-section">
+                <div class="page-header pink-header">
+                    <div class="header-icon"><i class="fa-solid fa-barcode"></i></div>
+                    <div class="header-text">
+                        <h2>ยืมอุปกรณ์</h2>
+                        <p>กรอกข้อมูลและเลือกอุปกรณ์ที่ต้องการยืม</p>
+                    </div>
+                </div>
+
+                <div class="two-col-layout">
+                    <!-- Left Form -->
+                    <div class="form-container">
+                        <h3>ข้อมูลผู้ยืม</h3>
+                        <div class="form-group">
+                            <label>รหัสนักศึกษา / รหัสบุคลากร <span class="required">*</span></label>
+                            <input type="text" id="borrow-user-id" placeholder="กรอกรหัสนักศึกษา / รหัสบุคลากร">
+                        </div>
+                        <div class="form-group">
+                            <label>ชื่อ-สกุล <span class="required">*</span></label>
+                            <input type="text" id="borrow-fullname" placeholder="กรอก ชื่อ-สกุล">
+                        </div>
+                        <div class="form-group">
+                            <label>สาขา / แผนก <span class="required">*</span></label>
+                            <input type="text" id="borrow-department" placeholder="กรอก สาขา / แผนก">
+                        </div>
+                        <div class="form-group">
+                            <label>เบอร์โทรศัพท์ <span class="required">*</span></label>
+                            <input type="text" id="borrow-phone" placeholder="กรอก เบอร์โทรศัพท์ *">
+                        </div>
+                        <div class="form-group">
+                            <label>วัตถุประสงค์ในการยืม <span class="required">*</span></label>
+                            <select id="borrow-purpose">
+                                <option value="">เลือกวัตถุประสงค์</option>
+                                <option value="การเรียนการสอน">การเรียนการสอน</option>
+                                <option value="ทำรายงาน / โครงงาน">ทำรายงาน / โครงงาน</option>
+                                <option value="จัดกิจกรรม / สัมมนา">จัดกิจกรรม / สัมมนา</option>
+                                <option value="ใช้งานส่วนตัว">ใช้งานส่วนตัว</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label>วันที่ต้องการยืม <span class="required">*</span></label>
+                                <div class="date-input">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    <input type="date" id="borrow-start-date">
+                                </div>
+                            </div>
+                            <div class="form-group half">
+                                <label>วันที่กำหนดคืน <span class="required">*</span></label>
+                                <div class="date-input">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    <input type="date" id="borrow-end-date">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>หมายเหตุ</label>
+                            <textarea id="borrow-note" placeholder="กรอกหมายเหตุ (ถ้ามี)"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-outline" onclick="clearBorrowForm()"><i class="fa-solid fa-circle-xmark"></i> ยกเลิก</button>
+                            <button type="button" class="btn-solid-pink" onclick="submitBorrowForm()"><i class="fa-solid fa-circle-check"></i> ยืนยันการยืม</button>
+                        </div>
+                    </div>
+
+                    <!-- Right Selection -->
+                    <div class="selection-container">
+                        <div class="selection-header">
+                            <h3>เลือกอุปกรณ์การยืม</h3>
+                            <div class="search-box">
+                                <input type="text" placeholder="ค้นหาอุปกรณ์...">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </div>
+                        </div>
+
+                        <div class="selection-table">
+                            <div class="table-header">
+                                <div class="col-img">อุปกรณ์</div>
+                                <div class="col-name"></div>
+                                <div class="col-id">รหัสอุปกรณ์</div>
+                                <div class="col-status">สถานะ</div>
+                                <div class="col-qty">จำนวนที่ยืม</div>
+                            </div>
+
+                            <!-- Rows -->
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=50&q=80"
+                                        alt="เมาส์ hp"></div>
+                                <div class="col-name">เมาส์ hp</div>
+                                <div class="col-id">MOU-001</div>
+                                <div class="col-status">
+                                    <div class="status-bar green"></div>คงเหลือ 12 ชิ้น
+                                </div>
+                                <div class="col-qty">
+                                    <div class="qty-control">
+                                        <button class="minus">-</button>
+                                        <input type="number" value="0" min="0" readonly>
+                                        <button class="plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=50&q=80"
+                                        alt="คีย์บอร์ด"></div>
+                                <div class="col-name">คีย์บอร์ด</div>
+                                <div class="col-id">KEY-001</div>
+                                <div class="col-status">
+                                    <div class="status-bar green"></div>คงเหลือ 8 ชิ้น
+                                </div>
+                                <div class="col-qty">
+                                    <div class="qty-control">
+                                        <button class="minus">-</button>
+                                        <input type="number" value="0" min="0" readonly>
+                                        <button class="plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://shop-image.readyplanet.com/o5i15Qd4d2aqqJtPRG5rNWBcmK8=/38a84492f7054becbb93c5a3dbdce215"
+                                        alt="โปรเจกเตอร์ epson"></div>
+                                <div class="col-name">โปรเจกเตอร์ epson</div>
+                                <div class="col-id">PRO-001</div>
+                                <div class="col-status">
+                                    <div class="status-bar green"></div>คงเหลือ 2 ชิ้น
+                                </div>
+                                <div class="col-qty">
+                                    <div class="qty-control">
+                                        <button class="minus">-</button>
+                                        <input type="number" value="0" min="0" readonly>
+                                        <button class="plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://image.makewebcdn.com/makeweb/m_1920x0/LqL4C2aWe/product_02/techgear_cat6_ethernet_lan_cable_cord_20_meter_original_imaf9ggz9zqp74y4.png"
+                                        alt="สายแลน LAN"></div>
+                                <div class="col-name">สายแลน LAN</div>
+                                <div class="col-id">LAV-001</div>
+                                <div class="col-status">
+                                    <div class="status-bar green"></div>คงเหลือ 20 ชิ้น
+                                </div>
+                                <div class="col-qty">
+                                    <div class="qty-control">
+                                        <button class="minus">-</button>
+                                        <input type="number" value="0" min="0" readonly>
+                                        <button class="plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://inwfile.com/s-ds/sjwj1d.jpg"
+                                        alt="สาย HDMI"></div>
+                                <div class="col-name">สาย HDMI 5 เมตร</div>
+                                <div class="col-id">HDM-001</div>
+                                <div class="col-status">
+                                    <div class="status-bar green"></div>คงเหลือ 7 ชิ้น
+                                </div>
+                                <div class="col-qty">
+                                    <div class="qty-control">
+                                        <button class="minus">-</button>
+                                        <input type="number" value="0" min="0" readonly>
+                                        <button class="plus">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Return Section -->
+            <section id="return" class="page-section">
+                <div class="page-header pink-header">
+                    <div class="header-icon"><i class="fa-solid fa-box-archive"></i></div>
+                    <div class="header-text">
+                        <h2>คืนอุปกรณ์</h2>
+                        <p>กรอกข้อมูลเพื่อคืนอุปกรณ์ที่ยืม</p>
+                    </div>
+                </div>
+
+                <div class="two-col-layout">
+                    <!-- Left Form -->
+                    <div class="form-container">
+                        <h3>ข้อมูลการคืน</h3>
+                        <div class="form-group flex-row-btn">
+                            <div class="flex-grow">
+                                <label>รหัสการยืม <span class="required">*</span></label>
+                                <input type="text" id="return-borrow-id" placeholder="กรอกรหัสการยืม / เลขที่ใบยืม">
+                            </div>
+                            <button type="button" class="btn-solid-pink mt-auto" onclick="searchReturnBorrow()"><i class="fa-solid fa-magnifying-glass"></i> ค้นหา</button>
+                        </div>
+                        <div class="form-group">
+                            <label>ชื่อผู้ยืม</label>
+                            <input type="text" id="return-borrower-name" placeholder="กรอก ชื่อผู้ยืม">
+                        </div>
+                        <div class="form-group">
+                            <label>อุปกรณ์ที่ยืม</label>
+                            <input type="text" id="return-device-name" placeholder="กรอก อุปกรณ์ที่ยืม">
+                        </div>
+                        <div class="form-group">
+                            <label>วันที่ยืม</label>
+                            <div class="date-input">
+                                <i class="fa-regular fa-calendar"></i>
+                                <input type="date" id="return-borrow-date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>กำหนดคืน</label>
+                            <div class="date-input">
+                                <i class="fa-regular fa-calendar"></i>
+                                <input type="date" id="return-due-date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>วันที่คืนจริง</label>
+                            <div class="date-input">
+                                <i class="fa-regular fa-calendar"></i>
+                                <input type="date" id="return-actual-date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>สภาพอุปกรณ์เมื่อคืน</label>
+                            <select id="return-condition">
+                                <option value="">เลือกสภาพอุปกรณ์เมื่อคืน</option>
+                                <option value="ปกติ">ปกติ</option>
+                                <option value="ชำรุด">ชำรุด</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>หมายเหตุ</label>
+                            <textarea id="return-note" placeholder="กรอกหมายเหตุ (ถ้ามี)"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-outline" onclick="clearReturnForm()"><i class="fa-solid fa-circle-xmark"></i> ยกเลิก</button>
+                            <button type="button" class="btn-solid-pink" onclick="submitReturnForm()"><i class="fa-solid fa-circle-check"></i> ยืนยันการคืน</button>
+                        </div>
+                    </div>
+
+                    <!-- Right Selection -->
+                    <div class="selection-container">
+                        <div class="selection-header">
+                            <h3>เลือกอุปกรณ์การคืน</h3>
+                            <div class="search-box">
+                                <input type="text" placeholder="ค้นหาอุปกรณ์...">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </div>
+                        </div>
+
+                        <div class="selection-table return-table">
+                            <div class="table-header">
+                                <div class="col-img">อุปกรณ์</div>
+                                <div class="col-name"></div>
+                                <div class="col-id">รหัสอุปกรณ์</div>
+                                <div class="col-date">วันที่ยืม</div>
+                                <div class="col-date">กำหนดคืน</div>
+                                <div class="col-action"></div>
+                            </div>
+
+                            <!-- Rows -->
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=50&q=80"
+                                        alt="เมาส์ hp"></div>
+                                <div class="col-name">เมาส์ hp</div>
+                                <div class="col-id">MOU-001</div>
+                                <div class="col-date">15/05/2024</div>
+                                <div class="col-date text-red">22/05/2024</div>
+                                <div class="col-action"><button type="button" class="btn-light-pink" onclick="selectItemToReturn('MOU-001', 'เมาส์ hp', '15/05/2024', '22/05/2024')">คืน</button></div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=50&q=80"
+                                        alt="คีย์บอร์ด"></div>
+                                <div class="col-name">คีย์บอร์ด</div>
+                                <div class="col-id">KEY-001</div>
+                                <div class="col-date">15/05/2024</div>
+                                <div class="col-date text-red">22/05/2024</div>
+                                <div class="col-action"><button type="button" class="btn-light-pink" onclick="selectItemToReturn('KEY-001', 'คีย์บอร์ด', '15/05/2024', '22/05/2024')">คืน</button></div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://shop-image.readyplanet.com/o5i15Qd4d2aqqJtPRG5rNWBcmK8=/38a84492f7054becbb93c5a3dbdce215"
+                                        alt="โปรเจกเตอร์ epson"></div>
+                                <div class="col-name">โปรเจกเตอร์ epson</div>
+                                <div class="col-id">PRO-001</div>
+                                <div class="col-date">15/05/2024</div>
+                                <div class="col-date text-red">22/05/2024</div>
+                                <div class="col-action"><button type="button" class="btn-light-pink" onclick="selectItemToReturn('PRO-001', 'โปรเจกเตอร์ epson', '15/05/2024', '22/05/2024')">คืน</button></div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://image.makewebcdn.com/makeweb/m_1920x0/LqL4C2aWe/product_02/techgear_cat6_ethernet_lan_cable_cord_20_meter_original_imaf9ggz9zqp74y4.png"
+                                        alt="สายแลน LAN"></div>
+                                <div class="col-name">สายแลน LAN</div>
+                                <div class="col-id">LAV-001</div>
+                                <div class="col-date">15/05/2024</div>
+                                <div class="col-date text-red">22/05/2024</div>
+                                <div class="col-action"><button type="button" class="btn-light-pink" onclick="selectItemToReturn('LAV-001', 'สายแลน LAN', '15/05/2024', '22/05/2024')">คืน</button></div>
+                            </div>
+                            <div class="table-row">
+                                <div class="col-img"><img
+                                        src="https://inwfile.com/s-ds/sjwj1d.jpg"
+                                        alt="สาย HDMI"></div>
+                                <div class="col-name">สาย HDMI 5 เมตร</div>
+                                <div class="col-id">HDM-001</div>
+                                <div class="col-date">15/05/2024</div>
+                                <div class="col-date text-red">22/05/2024</div>
+                                <div class="col-action"><button type="button" class="btn-light-pink" onclick="selectItemToReturn('HDM-001', 'สาย HDMI 5 เมตร', '15/05/2024', '22/05/2024')">คืน</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Status Section -->
+            <section id="status" class="page-section">
+                <div class="page-header pink-header large">
+                    <div class="header-icon large"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <div class="header-text">
+                        <h2>ตรวจสอบสถานะอุปกรณ์</h2>
+                        <p>ตรวจสอบสถานะการใช้งานของอุปกรณ์<br>ว่าพร้อมใช้งานหรือถูกยืมอยู่</p>
+                    </div>
+                </div>
+
+                <div class="filter-card">
+                    <div class="filter-row">
+                        <div class="filter-group flex-2">
+                            <label>ค้นหาอุปกรณ์</label>
+                            <div class="search-input">
+                                <input type="text" id="status-search-input" placeholder="พิมพ์ชื่ออุปกรณ์...">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>ประเภทอุปกรณ์</label>
+                            <select id="category-filter">
+                                <option value="ทั้งหมด">ทั้งหมด</option>
+                                <option value="เมาส์">เมาส์</option>
+                                <option value="คีย์บอร์ด">คีย์บอร์ด</option>
+                                <option value="โปรเจกเตอร์">โปรเจกเตอร์</option>
+                                <option value="สายแลน">สายแลน LAN</option>
+                                <option value="สาย HDMI">สาย HDMI</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>สถานะ</label>
+                            <select id="status-filter">
+                                <option value="ทั้งหมด">ทั้งหมด</option>
+                                <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
+                                <option value="ถูกยืม">ถูกยืม</option>
+                                <option value="ไม่พร้อมใช้งาน">ไม่พร้อมใช้งาน</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-solid-pink" id="btn-search-status"><i class="fa-solid fa-magnifying-glass"></i> ค้นหา</button>
+                            <button class="btn-white" id="btn-reset-status"><i class="fa-solid fa-rotate-right"></i> คืนค่า</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-container type-2">
+                    <div class="stat-card">
+                        <div class="stat-icon gray"><i class="fa-solid fa-desktop"></i></div>
+                        <div class="stat-info">
+                            <p>อุปกรณ์ทั้งหมด</p>
+                            <h3>36 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card active-green">
+                        <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-info">
+                            <p>พร้อมใช้งาน</p>
+                            <h3>22 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div>
+                        <div class="stat-info">
+                            <p>ถูกยืม</p>
+                            <h3>12 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon black"><i class="fa-solid fa-circle-xmark"></i></div>
+                        <div class="stat-info">
+                            <p>ไม่พร้อมใช้งาน</p>
+                            <h3>2 <span>รายการ</span></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-table-container">
+                    <table class="data-table" id="status-data-table">
+                        <thead>
+                            <tr>
+                                <th>อุปกรณ์</th>
+                                <th>รหัสอุปกรณ์/ประเภท</th>
+                                <th>สถานะ</th>
+                                <th>ผู้ยืม</th>
+                                <th>วันที่ยืม</th>
+                                <th>กำหนดคืน</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-name="เมาส์ hp" data-category="เมาส์" data-status="พร้อมใช้งาน">
+                                <td>
+                                    <div class="td-device">
+                                        <img src="https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=50&q=80"
+                                            alt="เมาส์ hp">
+                                        <span>เมาส์ hp</span>
+                                    </div>
+                                </td>
+                                <td>MOU-001</td>
+                                <td><span class="badge badge-green">พร้อมใช้งาน</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr data-name="คีย์บอร์ด" data-category="คีย์บอร์ด" data-status="ถูกยืม">
+                                <td>
+                                    <div class="td-device">
+                                        <img src="https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=50&q=80"
+                                            alt="คีย์บอร์ด">
+                                        <span>คีย์บอร์ด</span>
+                                    </div>
+                                </td>
+                                <td>KEY-001</td>
+                                <td><span class="badge badge-yellow">ถูกยืม</span></td>
+                                <td>นาย สมชาย ใจดี</td>
+                                <td>15/02/2024</td>
+                                <td>22/05/2024</td>
+                            </tr>
+                            <tr data-name="โปรเจกเตอร์ epson" data-category="โปรเจกเตอร์" data-status="ถูกยืม">
+                                <td>
+                                    <div class="td-device">
+                                        <img src="https://shop-image.readyplanet.com/o5i15Qd4d2aqqJtPRG5rNWBcmK8=/38a84492f7054becbb93c5a3dbdce215"
+                                            alt="โปรเจกเตอร์ epson">
+                                        <span>โปรเจกเตอร์ epson</span>
+                                    </div>
+                                </td>
+                                <td>PRO-001</td>
+                                <td><span class="badge badge-yellow">ถูกยืม</span></td>
+                                <td>นางสาววิภาดา รักเรียน</td>
+                                <td>15/02/2024</td>
+                                <td>22/05/2024</td>
+                            </tr>
+                            <tr data-name="สายแลน LAN" data-category="สายแลน" data-status="พร้อมใช้งาน">
+                                <td>
+                                    <div class="td-device">
+                                        <img src="https://image.makewebcdn.com/makeweb/m_1920x0/LqL4C2aWe/product_02/techgear_cat6_ethernet_lan_cable_cord_20_meter_original_imaf9ggz9zqp74y4.png"
+                                            alt="สายแลน LAN">
+                                        <span>สายแลน LAN</span>
+                                    </div>
+                                </td>
+                                <td>LAV-001</td>
+                                <td><span class="badge badge-green">พร้อมใช้งาน</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr data-name="สาย HDMI 5 เมตร" data-category="สาย HDMI" data-status="ไม่พร้อมใช้งาน">
+                                <td>
+                                    <div class="td-device">
+                                        <img src="https://inwfile.com/s-ds/sjwj1d.jpg"
+                                            alt="สาย HDMI 5 เมตร">
+                                        <span>สาย HDMI 5 เมตร</span>
+                                    </div>
+                                </td>
+                                <td>HDM-001</td>
+                                <td><span class="badge badge-red">ไม่พร้อมใช้งาน</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="table-pagination">
+                        <p>แสดง 1 ถึง 5 จาก 5 รายการ</p>
+                        <div class="pagination-controls">
+                            <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button class="page-btn active">1</button>
+                            <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-col">
+                <div class="logo">
+                    <i class="fa-solid fa-desktop logo-icon text-black"></i>
+                    <div class="logo-text">
+                        <h3>COM-EQUIP</h3>
+                        <p>ระบบยืม-คืนอุปกรณ์คอมพิวเตอร์</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>เมนูด่วน</h4>
+                <ul>
+                    <li><a href="#" onclick="switchPage('equipment')">> อุปกรณ์ทั้งหมด</a></li>
+                    <li><a href="#" onclick="switchPage('borrow')">> ยืมอุปกรณ์</a></li>
+                    <li><a href="#" onclick="switchPage('return')">> คืนอุปกรณ์</a></li>
+                    <li><a href="#" onclick="switchPage('status')">> ตรวจสอบสถานะ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col contact-info">
+                <h4>ติดต่อเรา</h4>
+                <p><i class="fa-solid fa-phone"></i> 02-123-4567</p>
+                <p><i class="fa-solid fa-envelope"></i> comequip@gmail.com</p>
+                <p><i class="fa-solid fa-location-dot"></i> ห้อง IT อาคาร 3 ชั้น 2</p>
+            </div>
+            <div class="footer-col social-links">
+                <h4>ติดตามเรา</h4>
+                <div class="social-icons">
+                    <a href="#" class="social-icon fb"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon line"><i class="fa-brands fa-line"></i></a>
+                    <a href="#" class="social-icon web"><i class="fa-solid fa-globe"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Equipment Detail Modal -->
+    <div id="equipment-modal" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEquipmentModal()">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeEquipmentModal()">&times;</button>
+            <div class="modal-body">
+                <div class="modal-img-col">
+                    <img id="modal-img" src="" alt="Equipment">
+                </div>
+                <div class="modal-info-col">
+                    <span id="modal-badge" class="badge"></span>
+                    <h2 id="modal-title"></h2>
+                    <p class="modal-code">รหัสอุปกรณ์: <strong id="modal-code"></strong></p>
+                    <p class="modal-stock">จำนวนคงเหลือ: <span id="modal-stock"></span></p>
+                    <div class="modal-desc">
+                        <h4>รายละเอียดอุปกรณ์:</h4>
+                        <p id="modal-desc-text"></p>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-solid-pink" onclick="borrowCurrentModalItem()"><i class="fa-solid fa-hand-holding-hand"></i> ยืมอุปกรณ์นี้</button>
+                        <button class="btn-white" onclick="closeEquipmentModal()">ปิดหน้าต่าง</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification Modal -->
+    <div id="success-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content text-center">
+            <div class="success-icon-wrapper">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2 id="success-modal-title">บันทึกข้อมูลสำเร็จ!</h2>
+            <p id="success-modal-message">ข้อมูลของคุณถูกบันทึกเข้าสู่ระบบเรียบร้อยแล้ว</p>
+            <div id="success-modal-details" class="success-details-box"></div>
+            <button id="success-modal-btn" class="btn-solid-pink btn-wide" onclick="closeSuccessModal()">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeLoginModal()">
+        <div class="modal-content login-modal-content">
+            <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fa-solid fa-desktop"></i>
+                </div>
+                <h2>เข้าสู่ระบบ COM-EQUIP</h2>
+                <p>กรอกชื่อผู้ใช้งานและรหัสผ่านเพื่อเข้าใช้งานระบบ</p>
+            </div>
+            <form id="login-form" onsubmit="handleLoginSubmit(event)">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user"></i> ชื่อผู้ใช้งาน / อีเมล</label>
+                    <input type="text" id="login-username" placeholder="admin@comequip.ac.th" value="admin" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-lock"></i> รหัสผ่าน</label>
+                    <input type="password" id="login-password" placeholder="••••••••" value="1234" required>
+                </div>
+                <div class="demo-login-hint">
+                    <i class="fa-solid fa-circle-info"></i> ข้อมูลทดสอบ: ชื่อผู้ใช้ <strong>admin</strong> / รหัสผ่าน <strong>1234</strong>
+                </div>
+                <div class="login-actions">
+                    <button type="button" class="btn-outline" onclick="closeLoginModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-solid-pink"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
