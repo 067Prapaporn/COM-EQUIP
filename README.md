@@ -64,4 +64,21 @@ c:\laragon\www\067prapaporn\kk\figma\
 ├── style.css      # ตกแต่งสไตล์ UI/UX และ Responsive Design
 ├── script.js     # ตรรกะการทำงาน (Logic, Form Validation, Routing, State)
 └── README.md      # เอกสารอธิบายรายละเอียดโครงการ
+```
 
+---
+
+## 🚀 การติดตั้งและใช้งาน (Getting Started)
+
+1. Clone หรือ Download โปรเจกต์นี้ลงในเครื่องของคุณ:
+   ```bash
+   git clone https://github.com/067Prapaporn/COM-EQUIP.git
+   ```
+2. เปิดโฟลเดอร์ผ่าน Laragon / XAMPP หรือเปิดไฟล์ `index.html` ผ่านเว็บเบราว์เซอร์ (Chrome, Edge, Firefox ฯลฯ)
+3. ใช้งานระบบได้ทันที!
+
+---
+
+## 👤 ผู้พัฒนาโครงการ (Developer)
+- **067Prapaporn**
+- **โครงการระบบยืม-คืนอุปกรณ์คอมพิวเตอร์ (COM-EQUIP)**
